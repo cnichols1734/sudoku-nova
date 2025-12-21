@@ -8,16 +8,48 @@ class SoundEngine {
         this.audioContext = null;
         this.enabled = true;
         this.volume = 0.3; // Subtle volume
+        this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        this.unlocked = false;
     }
     
     init() {
         if (this.audioContext) return;
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            // iOS Safari requires resuming on user interaction
+            if (this.isIOS) {
+                this.unlockAudio();
+            }
         } catch (e) {
             console.log('Web Audio not supported');
             this.enabled = false;
         }
+    }
+    
+    // Special unlock for iOS Safari
+    unlockAudio() {
+        if (this.unlocked) return;
+        
+        const unlock = () => {
+            if (this.audioContext && this.audioContext.state === 'suspended') {
+                this.audioContext.resume().then(() => {
+                    // Create and play a silent buffer to fully unlock
+                    const buffer = this.audioContext.createBuffer(1, 1, 22050);
+                    const source = this.audioContext.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(this.audioContext.destination);
+                    source.start(0);
+                    this.unlocked = true;
+                });
+            } else {
+                this.unlocked = true;
+            }
+        };
+        
+        // Listen for any user interaction
+        ['touchstart', 'touchend', 'click', 'keydown'].forEach(event => {
+            document.addEventListener(event, unlock, { once: true });
+        });
     }
     
     // Ensure audio context is resumed (needed for mobile)
@@ -325,9 +357,17 @@ class SudokuNova {
         this.bindEvents();
         this.showDifficultyModal();
         
-        // Initialize sound on first user interaction
-        document.addEventListener('click', () => Sound.init(), { once: true });
-        document.addEventListener('touchstart', () => Sound.init(), { once: true });
+        // Initialize sound on first user interaction (especially for iOS)
+        const initSound = () => {
+            Sound.init();
+            if (Sound.audioContext && Sound.audioContext.state === 'suspended') {
+                Sound.audioContext.resume();
+            }
+        };
+        
+        document.addEventListener('click', initSound);
+        document.addEventListener('touchstart', initSound);
+        document.addEventListener('touchend', initSound);
     }
     
     // ============ Sudoku Generator ============
