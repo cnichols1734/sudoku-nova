@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>SUDOKU NOVA ✦</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Particle Canvas Background -->
+    <canvas id="particles"></canvas>
+    
+    <!-- Main Game Container -->
+    <div id="app">
+        <!-- Header -->
+        <header class="game-header">
+            <div class="logo">
+                <span class="logo-icon">✦</span>
+                <span class="logo-text">SUDOKU NOVA</span>
+            </div>
+            <div class="header-stats">
+                <button class="sound-toggle" id="sound-toggle" title="Toggle Sound">
+                    <span class="sound-on">🔊</span>
+                    <span class="sound-off">🔇</span>
+                </button>
+                <div class="stat streak">
+                    <span class="stat-icon">🔥</span>
+                    <span class="stat-value" id="streak">0</span>
+                </div>
+                <div class="stat level">
+                    <span class="stat-icon">⭐</span>
+                    <span class="stat-value" id="level">1</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Game Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-label">SCORE</span>
+                <span class="stat-number" id="score">0</span>
+            </div>
+            <div class="stat-item combo-container">
+                <span class="stat-label">COMBO</span>
+                <span class="stat-number combo-display" id="combo">x1</span>
+                <div class="combo-timer-bar" id="combo-timer-bar">
+                    <div class="combo-timer-fill" id="combo-timer-fill"></div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">TIME</span>
+                <span class="stat-number" id="timer">00:00</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">HIGH</span>
+                <span class="stat-number" id="high-score">0</span>
+            </div>
+        </div>
+
+        <!-- XP Progress Bar -->
+        <div class="xp-bar-container">
+            <div class="xp-bar">
+                <div class="xp-fill" id="xp-fill"></div>
+            </div>
+            <span class="xp-text" id="xp-text">0 / 100 XP</span>
+        </div>
+
+        <!-- Sudoku Grid -->
+        <div class="grid-container">
+            <div class="grid-glow"></div>
+            <div id="sudoku-grid" class="sudoku-grid"></div>
+            <!-- Blast overlay for effects -->
+            <div id="blast-overlay" class="blast-overlay"></div>
+        </div>
+
+        <!-- Power-ups -->
+        <div class="powerups">
+            <button class="powerup" id="powerup-hint" data-count="3">
+                <span class="powerup-icon">💡</span>
+                <span class="powerup-name">Hint</span>
+                <span class="powerup-count">3</span>
+            </button>
+            <button class="powerup" id="powerup-freeze" data-count="2">
+                <span class="powerup-icon">❄️</span>
+                <span class="powerup-name">Freeze</span>
+                <span class="powerup-count">2</span>
+            </button>
+            <button class="powerup" id="powerup-blast" data-count="1">
+                <span class="powerup-icon">💥</span>
+                <span class="powerup-name">Blast</span>
+                <span class="powerup-count">1</span>
+            </button>
+        </div>
+
+        <!-- Number Pad -->
+        <div class="number-pad">
+            <button class="num-btn" data-num="1">1</button>
+            <button class="num-btn" data-num="2">2</button>
+            <button class="num-btn" data-num="3">3</button>
+            <button class="num-btn" data-num="4">4</button>
+            <button class="num-btn" data-num="5">5</button>
+            <button class="num-btn" data-num="6">6</button>
+            <button class="num-btn" data-num="7">7</button>
+            <button class="num-btn" data-num="8">8</button>
+            <button class="num-btn" data-num="9">9</button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn" id="btn-undo">
+                <span>↩</span>
+                <span>Undo</span>
+            </button>
+            <button class="action-btn" id="btn-notes">
+                <span>✏️</span>
+                <span>Notes</span>
+            </button>
+            <button class="action-btn" id="btn-erase">
+                <span>✕</span>
+                <span>Erase</span>
+            </button>
+            <button class="action-btn" id="btn-new">
+                <span>🎲</span>
+                <span>New</span>
+            </button>
+        </div>
+
+        <!-- Difficulty Selector (hidden by default) -->
+        <div id="difficulty-modal" class="modal">
+            <div class="modal-content difficulty-modal-content">
+                <!-- Tabs -->
+                <div class="modal-tabs">
+                    <button class="modal-tab active" data-tab="play">PLAY</button>
+                    <button class="modal-tab" data-tab="howto">HOW TO PLAY</button>
+                </div>
+
+                <!-- Play Tab -->
+                <div class="tab-content active" id="tab-play">
+                    <h2>SELECT DIFFICULTY</h2>
+                    <div class="difficulty-options">
+                        <button class="diff-btn" data-difficulty="easy">
+                            <span class="diff-stars">⭐</span>
+                            <span class="diff-name">EASY</span>
+                            <span class="diff-desc">Perfect for warming up</span>
+                        </button>
+                        <button class="diff-btn" data-difficulty="medium">
+                            <span class="diff-stars">⭐⭐</span>
+                            <span class="diff-name">MEDIUM</span>
+                            <span class="diff-desc">A balanced challenge</span>
+                        </button>
+                        <button class="diff-btn" data-difficulty="hard">
+                            <span class="diff-stars">⭐⭐⭐</span>
+                            <span class="diff-name">HARD</span>
+                            <span class="diff-desc">For true masters</span>
+                        </button>
+                        <button class="diff-btn" data-difficulty="expert">
+                            <span class="diff-stars">⭐⭐⭐⭐</span>
+                            <span class="diff-name">EXPERT</span>
+                            <span class="diff-desc">Ultimate test</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- How to Play Tab -->
+                <div class="tab-content" id="tab-howto">
+                    <div class="howto-scroll">
+                        <!-- Basic Rules -->
+                        <div class="howto-section">
+                            <h3>📋 Basic Rules</h3>
+                            <p>Fill the 9×9 grid so that each <strong>row</strong>, <strong>column</strong>, and <strong>3×3 box</strong> contains all digits from 1-9 without repeating.</p>
+                        </div>
+
+                        <!-- Scoring -->
+                        <div class="howto-section">
+                            <h3>🎯 Scoring System</h3>
+                            <div class="howto-item">
+                                <span class="howto-icon">✓</span>
+                                <div>
+                                    <strong>Correct Placement</strong>
+                                    <p>+10 points × current combo multiplier</p>
+                                </div>
+                            </div>
+                            <div class="howto-item">
+                                <span class="howto-icon">🔥</span>
+                                <div>
+                                    <strong>Region Complete</strong>
+                                    <p>+50 points × combo when you complete a row, column, or 3×3 box</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Combo System -->
+                        <div class="howto-section">
+                            <h3>⚡ Combo Multiplier</h3>
+                            <p>Build combos by completing rows, columns, or boxes!</p>
+                            <div class="howto-item">
+                                <span class="howto-icon highlight">x1→x10</span>
+                                <div>
+                                    <strong>Max Combo: x10</strong>
+                                    <p>Each region completion adds +1 to your multiplier</p>
+                                </div>
+                            </div>
+                            <div class="howto-item">
+                                <span class="howto-icon">⏱️</span>
+                                <div>
+                                    <strong>Combo Timer: 15 seconds</strong>
+                                    <p>Complete another region within 15s to keep your combo alive!</p>
+                                </div>
+                            </div>
+                            <div class="howto-item">
+                                <span class="howto-icon warning">✕</span>
+                                <div>
+                                    <strong>Combo Reset</strong>
+                                    <p>Wrong answers reset your combo to x1</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Power-ups -->
+                        <div class="howto-section">
+                            <h3>✨ Power-Ups</h3>
+                            <div class="howto-item powerup-item">
+                                <span class="howto-icon powerup-hint">💡</span>
+                                <div>
+                                    <strong>Hint</strong>
+                                    <p>Reveals the correct number for the selected cell. No combo bonus for hints.</p>
+                                </div>
+                            </div>
+                            <div class="howto-item powerup-item">
+                                <span class="howto-icon powerup-freeze">❄️</span>
+                                <div>
+                                    <strong>Freeze Time</strong>
+                                    <p>Pauses the timer for <strong>30 seconds</strong>. Great for thinking through tough spots!</p>
+                                </div>
+                            </div>
+                            <div class="howto-item powerup-item">
+                                <span class="howto-icon powerup-blast">💥</span>
+                                <div>
+                                    <strong>Blast</strong>
+                                    <p>Auto-fills up to <strong>3 cells</strong> in the same 3×3 box as your selected cell.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- XP & Leveling -->
+                        <div class="howto-section">
+                            <h3>⭐ XP & Leveling</h3>
+                            <div class="howto-item">
+                                <span class="howto-icon">📈</span>
+                                <div>
+                                    <strong>Earn XP</strong>
+                                    <p>Gain XP equal to 10% of your score. Complete puzzles for bonus XP!</p>
+                                </div>
+                            </div>
+                            <div class="howto-item">
+                                <span class="howto-icon">🎁</span>
+                                <div>
+                                    <strong>Level Up Rewards</strong>
+                                    <p><strong>Every level:</strong> +1 Hint<br>
+                                    <strong>Every 3 levels:</strong> +1 Freeze<br>
+                                    <strong>Every 5 levels:</strong> +1 Blast</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Streaks -->
+                        <div class="howto-section">
+                            <h3>🔥 Daily Streaks</h3>
+                            <p>Complete at least one puzzle each day to build your streak! Miss a day and it resets to zero.</p>
+                        </div>
+
+                        <!-- Stars -->
+                        <div class="howto-section">
+                            <h3>🏆 Star Ratings</h3>
+                            <div class="star-ratings">
+                                <div class="star-row">
+                                    <span>⭐⭐⭐</span>
+                                    <span>Complete in under 50% of target time</span>
+                                </div>
+                                <div class="star-row">
+                                    <span>⭐⭐</span>
+                                    <span>Complete in under target time</span>
+                                </div>
+                                <div class="star-row">
+                                    <span>⭐</span>
+                                    <span>Complete the puzzle</span>
+                                </div>
+                            </div>
+                            <p class="target-times"><strong>Target times:</strong> Easy 5min, Medium 10min, Hard 15min, Expert 20min</p>
+                        </div>
+
+                        <!-- Tips -->
+                        <div class="howto-section">
+                            <h3>💡 Pro Tips</h3>
+                            <ul class="tips-list">
+                                <li>Use <strong>Notes mode</strong> (✏️) to mark possible numbers</li>
+                                <li>Complete multiple regions quickly for massive combo bonuses</li>
+                                <li>Save power-ups for when you're really stuck</li>
+                                <li>Freeze time during complex solving sequences</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Victory Modal -->
+        <div id="victory-modal" class="modal">
+            <div class="modal-content victory">
+                <div class="victory-stars" id="victory-stars">⭐⭐⭐</div>
+                <h2>PUZZLE COMPLETE!</h2>
+                <div class="victory-stats">
+                    <div class="v-stat">
+                        <span class="v-label">Time</span>
+                        <span class="v-value" id="v-time">00:00</span>
+                    </div>
+                    <div class="v-stat">
+                        <span class="v-label">Score</span>
+                        <span class="v-value" id="v-score">0</span>
+                    </div>
+                    <div class="v-stat">
+                        <span class="v-label">Max Combo</span>
+                        <span class="v-value" id="v-combo">x1</span>
+                    </div>
+                    <div class="v-stat">
+                        <span class="v-label">XP Earned</span>
+                        <span class="v-value" id="v-xp">+0</span>
+                    </div>
+                </div>
+                <div class="victory-buttons">
+                    <button class="victory-btn primary" id="btn-next">NEXT PUZZLE</button>
+                    <button class="victory-btn" id="btn-share">SHARE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combo Popup -->
+        <div id="combo-popup" class="combo-popup">
+            <span class="combo-text">COMBO x2!</span>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
+
