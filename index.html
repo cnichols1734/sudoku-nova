@@ -146,7 +146,8 @@
                 <!-- Tabs -->
                 <div class="modal-tabs">
                     <button class="modal-tab active" data-tab="play">PLAY</button>
-                    <button class="modal-tab" data-tab="howto">HOW TO PLAY</button>
+                    <button class="modal-tab" data-tab="stats">STATS</button>
+                    <button class="modal-tab" data-tab="howto">HOW TO</button>
                 </div>
 
                 <!-- Play Tab -->
@@ -173,6 +174,87 @@
                             <span class="diff-name">EXPERT</span>
                             <span class="diff-desc">Ultimate test</span>
                         </button>
+                    </div>
+                </div>
+
+                <!-- Stats Tab -->
+                <div class="tab-content" id="tab-stats">
+                    <div class="stats-grid">
+                        <!-- Overview -->
+                        <div class="stats-card stats-overview">
+                            <div class="stats-card-header">
+                                <i data-lucide="trophy"></i>
+                                <h3>Overview</h3>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Total Puzzles</span>
+                                <span class="stats-value" id="stat-total-puzzles">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Perfect Games</span>
+                                <span class="stats-value gold" id="stat-perfect-games">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Current Level</span>
+                                <span class="stats-value" id="stat-current-level">1</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Total XP Earned</span>
+                                <span class="stats-value" id="stat-total-xp">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Longest Streak</span>
+                                <span class="stats-value flame" id="stat-longest-streak">0</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Puzzles by Difficulty -->
+                        <div class="stats-card">
+                            <div class="stats-card-header">
+                                <i data-lucide="grid-3x3"></i>
+                                <h3>Completed</h3>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label"><i data-lucide="star"></i> Easy</span>
+                                <span class="stats-value" id="stat-easy-completed">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label"><i data-lucide="star"></i><i data-lucide="star"></i> Medium</span>
+                                <span class="stats-value" id="stat-medium-completed">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i> Hard</span>
+                                <span class="stats-value" id="stat-hard-completed">0</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i> Expert</span>
+                                <span class="stats-value" id="stat-expert-completed">0</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Best Times -->
+                        <div class="stats-card">
+                            <div class="stats-card-header">
+                                <i data-lucide="timer"></i>
+                                <h3>Best Times</h3>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Easy</span>
+                                <span class="stats-value time" id="stat-easy-best">--:--</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Medium</span>
+                                <span class="stats-value time" id="stat-medium-best">--:--</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Hard</span>
+                                <span class="stats-value time" id="stat-hard-best">--:--</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Expert</span>
+                                <span class="stats-value time" id="stat-expert-best">--:--</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

@@ -324,6 +324,9 @@ class SudokuNova {
         this.streak = parseInt(localStorage.getItem('sudokuNovaStreak')) || 0;
         this.lastPlayDate = localStorage.getItem('sudokuNovaLastPlay');
         
+        // Stats (persistent across all games)
+        this.stats = this.loadStats();
+        
         // Power-ups (calculated from level, reset each game)
         this.powerups = this.calculatePowerups();
         
@@ -956,6 +959,9 @@ class SudokuNova {
         const multipliedAmount = Math.floor(amount * this.getDifficultyMultiplier());
         this.xp += multipliedAmount;
         
+        // Track total XP earned for stats
+        this.stats.totalXPEarned += multipliedAmount;
+        
         // Check for level up
         while (this.xp >= this.xpPerLevel) {
             this.xp -= this.xpPerLevel;
@@ -1243,6 +1249,9 @@ class SudokuNova {
             perfectBadge.classList.toggle('active', isPerfect);
         }
         
+        // Update lifetime stats
+        this.updateStats(isPerfect);
+        
         // Render victory stars with icons
         const starsContainer = document.getElementById('victory-stars');
         starsContainer.innerHTML = '';
@@ -1289,6 +1298,93 @@ class SudokuNova {
         }
         
         this.streakElement.textContent = this.streak;
+    }
+    
+    // ============ Stats System ============
+    
+    loadStats() {
+        const defaultStats = {
+            puzzlesCompleted: { easy: 0, medium: 0, hard: 0, expert: 0, total: 0 },
+            bestTimes: { easy: null, medium: null, hard: null, expert: null },
+            totalXPEarned: 0,
+            longestStreak: 0,
+            perfectGames: 0
+        };
+        
+        try {
+            const saved = localStorage.getItem('sudokuNovaStats');
+            if (saved) {
+                return { ...defaultStats, ...JSON.parse(saved) };
+            }
+        } catch (e) {
+            console.log('Error loading stats:', e);
+        }
+        
+        return defaultStats;
+    }
+    
+    saveStats() {
+        try {
+            localStorage.setItem('sudokuNovaStats', JSON.stringify(this.stats));
+        } catch (e) {
+            console.log('Error saving stats:', e);
+        }
+    }
+    
+    updateStats(isPerfect) {
+        // Update puzzles completed
+        this.stats.puzzlesCompleted[this.difficulty]++;
+        this.stats.puzzlesCompleted.total++;
+        
+        // Update best time
+        const currentBest = this.stats.bestTimes[this.difficulty];
+        if (currentBest === null || this.elapsedTime < currentBest) {
+            this.stats.bestTimes[this.difficulty] = this.elapsedTime;
+        }
+        
+        // Update longest streak
+        if (this.streak > this.stats.longestStreak) {
+            this.stats.longestStreak = this.streak;
+        }
+        
+        // Update perfect games count
+        if (isPerfect) {
+            this.stats.perfectGames++;
+        }
+        
+        // Total XP is tracked separately (we add to it in addXP)
+        this.saveStats();
+    }
+    
+    formatTime(seconds) {
+        if (seconds === null) return '--:--';
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    updateStatsDisplay() {
+        // Update stats tab display
+        const statsElements = {
+            'stat-total-puzzles': this.stats.puzzlesCompleted.total,
+            'stat-easy-completed': this.stats.puzzlesCompleted.easy,
+            'stat-medium-completed': this.stats.puzzlesCompleted.medium,
+            'stat-hard-completed': this.stats.puzzlesCompleted.hard,
+            'stat-expert-completed': this.stats.puzzlesCompleted.expert,
+            'stat-easy-best': this.formatTime(this.stats.bestTimes.easy),
+            'stat-medium-best': this.formatTime(this.stats.bestTimes.medium),
+            'stat-hard-best': this.formatTime(this.stats.bestTimes.hard),
+            'stat-expert-best': this.formatTime(this.stats.bestTimes.expert),
+            'stat-total-xp': this.stats.totalXPEarned.toLocaleString(),
+            'stat-longest-streak': this.stats.longestStreak,
+            'stat-perfect-games': this.stats.perfectGames,
+            'stat-current-level': this.level
+        };
+        
+        for (const [id, value] of Object.entries(statsElements)) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        }
     }
     
     // ============ New Game ============
@@ -1488,6 +1584,11 @@ class SudokuNova {
                     content.classList.remove('active');
                 });
                 document.getElementById(`tab-${tabName}`).classList.add('active');
+                
+                // Update stats display when stats tab is shown
+                if (tabName === 'stats') {
+                    this.updateStatsDisplay();
+                }
             });
         });
         
