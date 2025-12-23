@@ -304,7 +304,7 @@ class SudokuNova {
         this.combo = 1;
         this.maxCombo = 1;
         this.comboTimer = null;
-        this.comboTimeout = 15000; // 15 seconds to maintain combo (Sudoku needs thinking time!)
+        this.comboTimeout = 20000; // 20 seconds to maintain combo (Sudoku needs thinking time!)
         this.comboBarInterval = null;
         this.comboStartTime = null;
         
@@ -737,6 +737,7 @@ class SudokuNova {
             // Extend combo and increase multiplier
             this.extendCombo();
             this.combo = Math.min(this.combo + completions.length, 10);
+            this.updateComboDisplay();
             
             // Play region complete sound
             Sound.playRegionComplete();
