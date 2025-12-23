@@ -308,6 +308,13 @@ class SudokuNova {
         this.comboBarInterval = null;
         this.comboStartTime = null;
         
+        // Perfect game tracking
+        this.mistakesMade = 0;
+        this.hintsUsed = 0;
+        
+        // Number completion tracking (to detect when a number just completed)
+        this.completedNumbers = new Set();
+        
         // XP & Levels
         this.xp = parseInt(localStorage.getItem('sudokuNovaXP')) || 0;
         this.level = parseInt(localStorage.getItem('sudokuNovaLevel')) || 1;
@@ -762,6 +769,9 @@ class SudokuNova {
         const cell = this.gridElement.children[idx];
         cell.classList.add('error');
         
+        // Track mistakes for perfect game
+        this.mistakesMade++;
+        
         // Reset combo on error
         this.resetCombo();
         
@@ -931,8 +941,20 @@ class SudokuNova {
         }
     }
     
+    getDifficultyMultiplier() {
+        const multipliers = {
+            easy: 1,
+            medium: 1.5,
+            hard: 2,
+            expert: 3
+        };
+        return multipliers[this.difficulty] || 1;
+    }
+    
     addXP(amount) {
-        this.xp += Math.floor(amount);
+        // Apply difficulty multiplier - harder puzzles = more XP!
+        const multipliedAmount = Math.floor(amount * this.getDifficultyMultiplier());
+        this.xp += multipliedAmount;
         
         // Check for level up
         while (this.xp >= this.xpPerLevel) {
@@ -1029,6 +1051,7 @@ class SudokuNova {
         Sound.playPowerUp();
         
         this.powerups.hint--;
+        this.hintsUsed++;
         this.updatePowerupDisplay();
         
         // Fill in the correct number
@@ -1139,8 +1162,32 @@ class SudokuNova {
         
         document.querySelectorAll('.num-btn').forEach(btn => {
             const num = parseInt(btn.dataset.num);
-            btn.classList.toggle('completed', counts[num] >= 9);
+            const isComplete = counts[num] >= 9;
+            btn.classList.toggle('completed', isComplete);
+            
+            // Celebrate when a number just got completed!
+            if (isComplete && !this.completedNumbers.has(num)) {
+                this.completedNumbers.add(num);
+                this.celebrateNumberComplete(num, btn);
+            }
         });
+    }
+    
+    celebrateNumberComplete(num, btn) {
+        // Flash the button with celebration
+        btn.classList.add('number-complete-flash');
+        setTimeout(() => btn.classList.remove('number-complete-flash'), 800);
+        
+        // Play a satisfying sound
+        Sound.playRegionComplete();
+        
+        // Spawn particles from the button
+        const rect = btn.getBoundingClientRect();
+        this.spawnBlastParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        
+        // Bonus points for completing all of a number
+        const bonusPoints = 25 * this.combo;
+        this.addScore(bonusPoints);
     }
     
     // ============ Game Completion ============
@@ -1176,15 +1223,25 @@ class SudokuNova {
         if (this.elapsedTime < target * 0.5) stars = 3;
         else if (this.elapsedTime < target) stars = 2;
         
-        // Bonus XP
-        const bonusXP = stars * 25 + this.maxCombo * 10;
+        // Check for perfect game (no mistakes, no hints)
+        const isPerfect = this.mistakesMade === 0 && this.hintsUsed === 0;
+        const perfectBonus = isPerfect ? 50 : 0;
+        
+        // Bonus XP (with difficulty multiplier already applied in addXP)
+        const bonusXP = stars * 25 + this.maxCombo * 10 + perfectBonus;
         this.addXP(bonusXP);
         
         // Show victory modal
         document.getElementById('v-time').textContent = this.timerElement.textContent;
         document.getElementById('v-score').textContent = this.score.toLocaleString();
         document.getElementById('v-combo').textContent = `x${this.maxCombo}`;
-        document.getElementById('v-xp').textContent = `+${bonusXP}`;
+        document.getElementById('v-xp').textContent = `+${Math.floor(bonusXP * this.getDifficultyMultiplier())}`;
+        
+        // Show/hide perfect badge
+        const perfectBadge = document.getElementById('perfect-badge');
+        if (perfectBadge) {
+            perfectBadge.classList.toggle('active', isPerfect);
+        }
         
         // Render victory stars with icons
         const starsContainer = document.getElementById('victory-stars');
@@ -1243,6 +1300,11 @@ class SudokuNova {
         this.maxCombo = 1;
         this.selectedCell = null;
         this.notesMode = false;
+        
+        // Reset perfect game tracking
+        this.mistakesMade = 0;
+        this.hintsUsed = 0;
+        this.completedNumbers = new Set();
         
         // Reset power-ups based on current level (fresh start each game!)
         this.powerups = this.calculatePowerups();
