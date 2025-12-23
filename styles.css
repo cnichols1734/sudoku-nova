@@ -35,12 +35,9 @@
     --cell-border-box: rgba(255, 255, 255, 0.3);
     --cell-error: rgba(255, 45, 117, 0.3);
     
-    /* Sizing - responsive based on viewport */
-    --grid-size: min(88vw, 390px);
+    /* Sizing */
+    --grid-size: min(92vw, 390px);
     --cell-size: calc(var(--grid-size) / 9);
-    
-    /* Dynamic spacing based on screen height */
-    --spacing-unit: min(1.2vh, 10px);
     
     /* Transitions */
     --transition-fast: 0.15s ease;
@@ -103,9 +100,9 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: var(--spacing-unit) 16px;
-    padding-top: calc(env(safe-area-inset-top, 0px) + var(--spacing-unit));
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--spacing-unit));
+    padding: 12px 16px;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
     background: linear-gradient(
         180deg,
         rgba(157, 78, 221, 0.1) 0%,
@@ -562,8 +559,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    padding: clamp(6px, 1.2vh, 10px) 14px;
+    gap: 4px;
+    padding: 10px 16px;
     background: var(--bg-surface);
     border: 1px solid var(--cell-border);
     border-radius: 12px;
@@ -587,15 +584,15 @@ body {
 }
 
 .powerup-icon {
-    font-size: 22px;
+    font-size: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .powerup-icon svg {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
 }
 
 #powerup-hint .powerup-icon svg {
@@ -655,13 +652,13 @@ body {
     border: none;
     border-radius: 12px;
     font-family: 'DM Sans', -apple-system, sans-serif;
-    font-size: clamp(22px, 6vw, 28px);
+    font-size: 28px;
     font-weight: 600;
     color: var(--text-primary);
     cursor: pointer;
     transition: all var(--transition-fast);
-    padding: clamp(8px, 2vh, 14px) 0;
-    min-height: clamp(44px, 7vh, 56px);
+    padding: 14px 0;
+    min-height: 56px;
 }
 
 .num-btn:active {
@@ -698,13 +695,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    padding: clamp(6px, 1.2vh, 10px) 8px;
+    gap: 4px;
+    padding: 12px 8px;
     background: var(--bg-surface);
     border: 1px solid var(--cell-border);
     border-radius: 12px;
     color: var(--text-secondary);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -1334,11 +1331,16 @@ body {
 
 /* Responsive Adjustments */
 
-/* Smaller phones (iPhone 15, SE, etc.) */
-@media (max-height: 850px) {
+/* Smaller phones like iPhone 15 (height ~852px) */
+@media (max-height: 880px) {
     :root {
-        --grid-size: min(85vw, 340px);
-        --spacing-unit: 6px;
+        --grid-size: min(88vw, 350px);
+    }
+    
+    #app {
+        padding: 8px 14px;
+        padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
     }
     
     .stats-bar {
@@ -1362,7 +1364,8 @@ body {
     }
     
     .powerup {
-        padding: 5px 10px;
+        padding: 6px 12px;
+        gap: 2px;
     }
     
     .powerup-icon svg {
@@ -1374,16 +1377,34 @@ body {
         font-size: 9px;
     }
     
-    .cell {
-        font-size: calc(var(--cell-size) * 0.5);
+    .num-btn {
+        font-size: 24px;
+        padding: 10px 0;
+        min-height: 48px;
+    }
+    
+    .action-btn {
+        padding: 8px 6px;
+        gap: 2px;
+        font-size: 10px;
+    }
+    
+    .action-btn .action-icon svg {
+        width: 18px;
+        height: 18px;
     }
 }
 
-/* Very small phones */
+/* Very small phones (iPhone SE, etc.) */
 @media (max-height: 700px) {
     :root {
-        --grid-size: min(82vw, 300px);
-        --spacing-unit: 4px;
+        --grid-size: min(85vw, 300px);
+    }
+    
+    #app {
+        padding: 6px 12px;
+        padding-top: calc(env(safe-area-inset-top, 0px) + 6px);
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
     }
     
     .logo-text {
@@ -1394,7 +1415,14 @@ body {
         display: none;
     }
     
+    .num-btn {
+        font-size: 20px;
+        padding: 8px 0;
+        min-height: 40px;
+    }
+    
     .action-btn {
+        padding: 6px 4px;
         font-size: 9px;
     }
     
@@ -1404,9 +1432,10 @@ body {
     }
 }
 
-@media (max-width: 360px) {
+/* Narrow screens */
+@media (max-width: 380px) {
     :root {
-        --grid-size: min(90vw, 300px);
+        --grid-size: min(92vw, 320px);
     }
     
     .logo-text {
