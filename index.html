@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -147,6 +149,7 @@
                 <div class="modal-tabs">
                     <button class="modal-tab active" data-tab="play">PLAY</button>
                     <button class="modal-tab" data-tab="stats">STATS</button>
+                    <button class="modal-tab" data-tab="ranks">RANKS</button>
                     <button class="modal-tab" data-tab="howto">HOW TO</button>
                 </div>
 
@@ -254,6 +257,42 @@
                                 <span class="stats-label">Expert</span>
                                 <span class="stats-value time" id="stat-expert-best">--:--</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ranks/Leaderboard Tab -->
+                <div class="tab-content" id="tab-ranks">
+                    <div class="leaderboard-header">
+                        <h2><i data-lucide="trophy"></i> GLOBAL RANKS</h2>
+                        <div class="leaderboard-filters">
+                            <button class="lb-filter active" data-sort="level">Level</button>
+                            <button class="lb-filter" data-sort="total_xp">XP</button>
+                            <button class="lb-filter" data-sort="puzzles_completed">Puzzles</button>
+                        </div>
+                    </div>
+                    
+                    <div class="your-rank-card" id="your-rank-card">
+                        <div class="your-rank-label">YOUR RANK</div>
+                        <div class="your-rank-info">
+                            <span class="your-rank-position" id="your-rank-position">#--</span>
+                            <span class="your-rank-name" id="your-rank-name">Loading...</span>
+                            <span class="your-rank-stat" id="your-rank-stat">--</span>
+                        </div>
+                    </div>
+                    
+                    <div class="leaderboard-list" id="leaderboard-list">
+                        <div class="leaderboard-loading">
+                            <i data-lucide="loader-2" class="spin"></i>
+                            <span>Loading leaderboard...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="name-editor" id="name-editor">
+                        <label for="player-name-input">Your Display Name:</label>
+                        <div class="name-input-row">
+                            <input type="text" id="player-name-input" maxlength="20" placeholder="Anonymous">
+                            <button id="save-name-btn"><i data-lucide="check"></i></button>
                         </div>
                     </div>
                 </div>

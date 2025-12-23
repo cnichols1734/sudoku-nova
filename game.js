@@ -286,6 +286,131 @@ class SoundEngine {
 // Global sound engine
 const Sound = new SoundEngine();
 
+// ============ Supabase Cloud Sync ============
+const SUPABASE_URL = 'https://bbtpfihoztvjcieupwax.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_NPNhIrR_unVGVLeCKq1Zig_9UutNfCO';
+
+class CloudSync {
+    constructor() {
+        this.supabase = null;
+        this.playerId = null;
+        this.playerName = 'Anonymous';
+        this.isOnline = navigator.onLine;
+        this.init();
+    }
+    
+    init() {
+        // Initialize Supabase client
+        if (typeof supabase !== 'undefined') {
+            this.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+        
+        // Get or create player ID
+        this.playerId = localStorage.getItem('sudokuNovaPlayerId');
+        if (!this.playerId) {
+            this.playerId = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('sudokuNovaPlayerId', this.playerId);
+        }
+        
+        // Load player name
+        this.playerName = localStorage.getItem('sudokuNovaPlayerName') || 'Anonymous';
+        
+        // Listen for online/offline
+        window.addEventListener('online', () => { this.isOnline = true; });
+        window.addEventListener('offline', () => { this.isOnline = false; });
+    }
+    
+    async syncStats(stats, level) {
+        if (!this.supabase || !this.isOnline) return;
+        
+        try {
+            const data = {
+                player_id: this.playerId,
+                player_name: this.playerName,
+                level: level,
+                total_xp: stats.totalXPEarned,
+                puzzles_completed: stats.puzzlesCompleted.total,
+                perfect_games: stats.perfectGames,
+                longest_streak: stats.longestStreak,
+                best_time_easy: stats.bestTimes.easy,
+                best_time_medium: stats.bestTimes.medium,
+                best_time_hard: stats.bestTimes.hard,
+                best_time_expert: stats.bestTimes.expert,
+                updated_at: new Date().toISOString()
+            };
+            
+            // Upsert (insert or update)
+            const { error } = await this.supabase
+                .from('player_stats')
+                .upsert(data, { onConflict: 'player_id' });
+            
+            if (error) console.log('Sync error:', error);
+        } catch (e) {
+            console.log('Cloud sync failed:', e);
+        }
+    }
+    
+    async getLeaderboard(sortBy = 'level', limit = 50) {
+        if (!this.supabase) return [];
+        
+        try {
+            const { data, error } = await this.supabase
+                .from('player_stats')
+                .select('*')
+                .order(sortBy, { ascending: false })
+                .limit(limit);
+            
+            if (error) {
+                console.log('Leaderboard error:', error);
+                return [];
+            }
+            
+            return data || [];
+        } catch (e) {
+            console.log('Failed to fetch leaderboard:', e);
+            return [];
+        }
+    }
+    
+    async getPlayerRank(sortBy = 'level') {
+        if (!this.supabase) return null;
+        
+        try {
+            // Get all players sorted, find our position
+            const { data, error } = await this.supabase
+                .from('player_stats')
+                .select('player_id, ' + sortBy)
+                .order(sortBy, { ascending: false });
+            
+            if (error || !data) return null;
+            
+            const rank = data.findIndex(p => p.player_id === this.playerId) + 1;
+            return rank > 0 ? rank : null;
+        } catch (e) {
+            return null;
+        }
+    }
+    
+    async updatePlayerName(name) {
+        this.playerName = name.trim() || 'Anonymous';
+        localStorage.setItem('sudokuNovaPlayerName', this.playerName);
+        
+        if (!this.supabase || !this.isOnline) return;
+        
+        try {
+            await this.supabase
+                .from('player_stats')
+                .update({ player_name: this.playerName })
+                .eq('player_id', this.playerId);
+        } catch (e) {
+            console.log('Failed to update name:', e);
+        }
+    }
+}
+
+// Global cloud sync
+const Cloud = new CloudSync();
+
 class SudokuNova {
     constructor() {
         // Game State
@@ -1354,6 +1479,9 @@ class SudokuNova {
         
         // Total XP is tracked separately (we add to it in addXP)
         this.saveStats();
+        
+        // Sync to cloud
+        Cloud.syncStats(this.stats, this.level);
     }
     
     formatTime(seconds) {
@@ -1385,6 +1513,97 @@ class SudokuNova {
             const el = document.getElementById(id);
             if (el) el.textContent = value;
         }
+    }
+    
+    // ============ Leaderboard ============
+    
+    async loadLeaderboard(sortBy = 'level') {
+        const listEl = document.getElementById('leaderboard-list');
+        if (!listEl) return;
+        
+        // Show loading
+        listEl.innerHTML = `
+            <div class="leaderboard-loading">
+                <i data-lucide="loader-2" class="spin"></i>
+                <span>Loading leaderboard...</span>
+            </div>
+        `;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        
+        // Fetch leaderboard
+        const players = await Cloud.getLeaderboard(sortBy, 50);
+        const myRank = await Cloud.getPlayerRank(sortBy);
+        
+        // Update your rank card
+        const yourRankPos = document.getElementById('your-rank-position');
+        const yourRankName = document.getElementById('your-rank-name');
+        const yourRankStat = document.getElementById('your-rank-stat');
+        
+        if (yourRankPos) yourRankPos.textContent = myRank ? `#${myRank}` : '#--';
+        if (yourRankName) yourRankName.textContent = Cloud.playerName;
+        if (yourRankStat) {
+            const myData = players.find(p => p.player_id === Cloud.playerId);
+            yourRankStat.textContent = myData ? this.getStatValue(myData, sortBy) : '--';
+        }
+        
+        // Render leaderboard
+        if (players.length === 0) {
+            listEl.innerHTML = `
+                <div class="leaderboard-empty">
+                    <i data-lucide="users"></i>
+                    <span>No players yet. Be the first!</span>
+                </div>
+            `;
+        } else {
+            listEl.innerHTML = players.map((player, index) => {
+                const isYou = player.player_id === Cloud.playerId;
+                const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
+                const statValue = this.getStatValue(player, sortBy);
+                
+                return `
+                    <div class="leaderboard-row ${isYou ? 'is-you' : ''} ${rankClass}">
+                        <span class="lb-rank">${index + 1}</span>
+                        <span class="lb-name">${this.escapeHtml(player.player_name || 'Anonymous')}</span>
+                        <span class="lb-stat">${statValue}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+    
+    getStatValue(player, sortBy) {
+        switch (sortBy) {
+            case 'level': return `Lv.${player.level}`;
+            case 'total_xp': return `${player.total_xp.toLocaleString()} XP`;
+            case 'puzzles_completed': return `${player.puzzles_completed} puzzles`;
+            default: return `Lv.${player.level}`;
+        }
+    }
+    
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    async savePlayerName() {
+        const input = document.getElementById('player-name-input');
+        if (!input) return;
+        
+        const name = input.value.trim() || 'Anonymous';
+        await Cloud.updatePlayerName(name);
+        
+        // Flash confirmation
+        const btn = document.getElementById('save-name-btn');
+        if (btn) {
+            btn.classList.add('saved');
+            setTimeout(() => btn.classList.remove('saved'), 1000);
+        }
+        
+        // Reload leaderboard to show new name
+        this.loadLeaderboard();
     }
     
     // ============ New Game ============
@@ -1589,8 +1808,36 @@ class SudokuNova {
                 if (tabName === 'stats') {
                     this.updateStatsDisplay();
                 }
+                
+                // Load leaderboard when ranks tab is shown
+                if (tabName === 'ranks') {
+                    this.loadLeaderboard();
+                }
             });
         });
+        
+        // Leaderboard filter buttons
+        document.querySelectorAll('.lb-filter').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.lb-filter').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.loadLeaderboard(btn.dataset.sort);
+            });
+        });
+        
+        // Player name save button
+        const saveNameBtn = document.getElementById('save-name-btn');
+        if (saveNameBtn) {
+            saveNameBtn.addEventListener('click', () => this.savePlayerName());
+        }
+        
+        const nameInput = document.getElementById('player-name-input');
+        if (nameInput) {
+            nameInput.value = Cloud.playerName;
+            nameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.savePlayerName();
+            });
+        }
         
         // Victory modal
         document.getElementById('btn-next').addEventListener('click', () => {
