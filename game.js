@@ -1187,7 +1187,18 @@ class SudokuNova {
         document.getElementById('v-score').textContent = this.score.toLocaleString();
         document.getElementById('v-combo').textContent = `x${this.maxCombo}`;
         document.getElementById('v-xp').textContent = `+${bonusXP}`;
-        document.getElementById('victory-stars').textContent = '⭐'.repeat(stars);
+        
+        // Render victory stars with icons
+        const starsContainer = document.getElementById('victory-stars');
+        starsContainer.innerHTML = '';
+        for (let i = 0; i < stars; i++) {
+            const starIcon = document.createElement('i');
+            starIcon.setAttribute('data-lucide', 'star');
+            starsContainer.appendChild(starIcon);
+        }
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
         
         // Play victory sound
         Sound.playVictory();
@@ -1489,6 +1500,10 @@ class SudokuNova {
 
 // Initialize game when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
     window.game = new SudokuNova();
 });
 

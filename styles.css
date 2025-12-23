@@ -36,7 +36,7 @@
     --cell-error: rgba(255, 45, 117, 0.3);
     
     /* Sizing */
-    --grid-size: min(90vw, 400px);
+    --grid-size: min(92vw, 390px);
     --cell-size: calc(var(--grid-size) / 9);
     
     /* Transitions */
@@ -58,7 +58,7 @@ html, body {
 }
 
 body {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg-deep);
     color: var(--text-primary);
     display: flex;
@@ -125,13 +125,22 @@ body {
 .logo-icon {
     font-size: 24px;
     animation: pulse-glow 2s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+}
+
+.logo-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--nova-pink);
+    filter: drop-shadow(0 0 8px rgba(255, 45, 117, 0.6));
 }
 
 .logo-text {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 20px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     background: linear-gradient(135deg, var(--nova-pink), var(--nova-purple), var(--nova-blue));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -218,10 +227,28 @@ body {
 
 .stat-icon {
     font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.stat-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.stat.streak .stat-icon svg {
+    color: var(--nova-orange);
+    filter: drop-shadow(0 0 4px rgba(255, 107, 53, 0.6));
+}
+
+.stat.level .stat-icon svg {
+    color: var(--nova-gold);
+    fill: var(--nova-gold);
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6));
 }
 
 .stat-value {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 14px;
 }
 
@@ -252,7 +279,7 @@ body {
 }
 
 .stat-number {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 16px;
     font-weight: 600;
 }
@@ -399,8 +426,8 @@ body {
     align-items: center;
     background: var(--cell-bg);
     border: 1px solid var(--cell-border);
-    font-family: 'Orbitron', sans-serif;
-    font-size: calc(var(--cell-size) * 0.5);
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: calc(var(--cell-size) * 0.55);
     font-weight: 600;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -445,11 +472,13 @@ body {
 }
 
 .cell.fixed {
-    color: var(--text-secondary);
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 .cell:not(.fixed) {
     color: var(--nova-cyan);
+    font-weight: 600;
 }
 
 .cell.error {
@@ -551,6 +580,29 @@ body {
 
 .powerup-icon {
     font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.powerup-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+#powerup-hint .powerup-icon svg {
+    color: var(--nova-gold);
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5));
+}
+
+#powerup-freeze .powerup-icon svg {
+    color: var(--nova-cyan);
+    filter: drop-shadow(0 0 6px rgba(0, 245, 212, 0.5));
+}
+
+#powerup-blast .powerup-icon svg {
+    color: var(--nova-orange);
+    filter: drop-shadow(0 0 6px rgba(255, 107, 53, 0.5));
 }
 
 .powerup-name {
@@ -568,7 +620,7 @@ body {
     height: 20px;
     background: linear-gradient(135deg, var(--nova-pink), var(--nova-purple));
     border-radius: 50%;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 11px;
     font-weight: 700;
     display: flex;
@@ -581,47 +633,48 @@ body {
 .number-pad {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
-    gap: 6px;
+    gap: 0;
     width: 100%;
-    max-width: var(--grid-size);
-    margin-bottom: 12px;
+    max-width: calc(var(--grid-size) + 20px);
+    margin-bottom: 16px;
+    padding: 8px 0;
 }
 
 .num-btn {
-    aspect-ratio: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: var(--bg-surface);
-    border: 1px solid var(--cell-border);
-    border-radius: 10px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 18px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    font-size: 28px;
     font-weight: 600;
     color: var(--text-primary);
     cursor: pointer;
     transition: all var(--transition-fast);
+    padding: 14px 0;
+    min-height: 56px;
 }
 
 .num-btn:active {
-    transform: scale(0.9);
-    background: var(--nova-purple);
+    transform: scale(0.85);
+    color: var(--nova-cyan);
 }
 
 .num-btn:hover {
-    background: var(--cell-bg-hover);
-    border-color: var(--nova-blue);
+    color: var(--nova-blue);
+    background: rgba(76, 201, 240, 0.1);
 }
 
 .num-btn.completed {
-    opacity: 0.3;
+    opacity: 0.25;
     color: var(--text-dim);
 }
 
 .num-btn.highlighted {
-    background: rgba(76, 201, 240, 0.2);
-    border-color: var(--nova-blue);
-    box-shadow: var(--glow-blue);
+    color: var(--nova-cyan);
+    text-shadow: 0 0 20px rgba(76, 201, 240, 0.8);
 }
 
 /* Action Buttons */
@@ -649,8 +702,15 @@ body {
     transition: all var(--transition-fast);
 }
 
-.action-btn span:first-child {
-    font-size: 18px;
+.action-btn .action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn .action-icon svg {
+    width: 20px;
+    height: 20px;
 }
 
 .action-btn:active {
@@ -711,10 +771,10 @@ body {
 }
 
 .modal-content h2 {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 20px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     margin-bottom: 24px;
     background: linear-gradient(135deg, var(--nova-pink), var(--nova-purple));
     -webkit-background-clip: text;
@@ -738,7 +798,7 @@ body {
     background: transparent;
     border: none;
     border-radius: 8px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 1px;
@@ -806,13 +866,21 @@ body {
 }
 
 .howto-section h3 {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 14px;
     font-weight: 600;
     color: var(--nova-cyan);
     margin-bottom: 10px;
     padding-bottom: 6px;
     border-bottom: 1px solid var(--cell-border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.howto-section h3 svg {
+    width: 16px;
+    height: 16px;
 }
 
 .howto-section p {
@@ -852,9 +920,14 @@ body {
     border-radius: 8px;
 }
 
+.howto-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
 .howto-icon.highlight {
     font-size: 11px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-weight: 700;
     background: linear-gradient(135deg, var(--nova-gold), var(--nova-orange));
     -webkit-background-clip: text;
@@ -870,12 +943,24 @@ body {
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
 }
 
+.howto-icon.powerup-hint svg {
+    color: var(--nova-gold);
+}
+
 .howto-icon.powerup-freeze {
     background: linear-gradient(135deg, rgba(76, 201, 240, 0.2), rgba(76, 201, 240, 0.1));
 }
 
+.howto-icon.powerup-freeze svg {
+    color: var(--nova-cyan);
+}
+
 .howto-icon.powerup-blast {
     background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(255, 45, 117, 0.1));
+}
+
+.howto-icon.powerup-blast svg {
+    color: var(--nova-orange);
 }
 
 .howto-item div {
@@ -912,8 +997,18 @@ body {
     font-size: 12px;
 }
 
-.star-row span:first-child {
+.star-row span:first-child,
+.star-row .star-icons {
     min-width: 60px;
+    display: flex;
+    gap: 2px;
+}
+
+.star-row .star-icons svg {
+    width: 14px;
+    height: 14px;
+    color: var(--nova-gold);
+    fill: var(--nova-gold);
 }
 
 .star-row span:last-child {
@@ -990,12 +1085,21 @@ body {
 }
 
 .diff-stars {
-    font-size: 16px;
-    letter-spacing: 2px;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.diff-stars svg {
+    width: 16px;
+    height: 16px;
+    color: var(--nova-gold);
+    fill: var(--nova-gold);
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5));
 }
 
 .diff-name {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 16px;
     font-weight: 700;
     color: var(--text-primary);
@@ -1016,9 +1120,19 @@ body {
 }
 
 .victory-stars {
-    font-size: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
     margin-bottom: 16px;
     animation: stars-appear 0.6s ease;
+}
+
+.victory-stars svg {
+    width: 40px;
+    height: 40px;
+    color: var(--nova-gold);
+    fill: var(--nova-gold);
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.8));
 }
 
 .victory-stats {
@@ -1041,7 +1155,7 @@ body {
 }
 
 .v-value {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 20px;
     font-weight: 600;
     color: var(--nova-cyan);
@@ -1057,7 +1171,7 @@ body {
     flex: 1;
     padding: 14px 20px;
     border-radius: 12px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 1px;
@@ -1089,9 +1203,9 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0);
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     font-size: 36px;
-    font-weight: 900;
+    font-weight: 800;
     color: var(--nova-gold);
     text-shadow: 
         0 0 20px rgba(255, 215, 0, 0.8),
