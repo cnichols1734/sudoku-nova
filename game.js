@@ -304,7 +304,7 @@ class SudokuNova {
         this.combo = 1;
         this.maxCombo = 1;
         this.comboTimer = null;
-        this.comboTimeout = 20000; // 20 seconds to maintain combo (Sudoku needs thinking time!)
+        this.comboTimeout = 35000; // 35 seconds to maintain combo (Sudoku needs thinking time!)
         this.comboBarInterval = null;
         this.comboStartTime = null;
         
