@@ -28,9 +28,9 @@
     /* Grid Colors */
     --cell-bg: rgba(255, 255, 255, 0.03);
     --cell-bg-hover: rgba(255, 255, 255, 0.08);
-    --cell-bg-selected: rgba(76, 201, 240, 0.15);
-    --cell-bg-same-number: rgba(157, 78, 221, 0.15);
-    --cell-bg-same-region: rgba(255, 255, 255, 0.05);
+    --cell-bg-selected: rgba(76, 201, 240, 0.25);
+    --cell-bg-same-number: rgba(157, 78, 221, 0.25);
+    --cell-bg-same-region: rgba(76, 201, 240, 0.08);
     --cell-border: rgba(255, 255, 255, 0.1);
     --cell-border-box: rgba(255, 255, 255, 0.3);
     --cell-error: rgba(255, 45, 117, 0.3);
@@ -52,8 +52,11 @@
     padding: 0;
 }
 
-html {
+html, body {
     height: 100%;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
 }
 
 body {
@@ -71,8 +74,6 @@ body {
     touch-action: manipulation;
     user-select: none;
     -webkit-user-select: none;
-    overflow-x: hidden;
-    overflow-y: auto;
 }
 
 /* Particle Background */
