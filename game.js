@@ -317,12 +317,8 @@ class SudokuNova {
         this.streak = parseInt(localStorage.getItem('sudokuNovaStreak')) || 0;
         this.lastPlayDate = localStorage.getItem('sudokuNovaLastPlay');
         
-        // Power-ups
-        this.powerups = {
-            hint: parseInt(localStorage.getItem('sudokuNovaHints')) || 3,
-            freeze: parseInt(localStorage.getItem('sudokuNovaFreeze')) || 2,
-            blast: parseInt(localStorage.getItem('sudokuNovaBlast')) || 1
-        };
+        // Power-ups (calculated from level, reset each game)
+        this.powerups = this.calculatePowerups();
         
         // Timer
         this.timerInterval = null;
@@ -961,14 +957,14 @@ class SudokuNova {
         // Play level up sound
         Sound.playLevelUp();
         
-        // Award power-ups
-        this.powerups.hint++;
-        if (this.level % 3 === 0) this.powerups.freeze++;
-        if (this.level % 5 === 0) this.powerups.blast++;
+        // Recalculate power-ups based on new level
+        // If new allocation is higher, give them the extra immediately!
+        const newAllocation = this.calculatePowerups();
+        this.powerups.hint = Math.max(this.powerups.hint, newAllocation.hint);
+        this.powerups.freeze = Math.max(this.powerups.freeze, newAllocation.freeze);
+        this.powerups.blast = Math.max(this.powerups.blast, newAllocation.blast);
         
         this.updatePowerupDisplay();
-        this.savePowerups();
-        
         this.levelElement.textContent = this.level;
     }
     
@@ -1014,6 +1010,16 @@ class SudokuNova {
     
     // ============ Power-ups ============
     
+    calculatePowerups() {
+        // Base allocation + level bonuses
+        // This creates meaningful progression without hoarding
+        return {
+            hint: 2 + Math.floor(this.level / 5),    // +1 every 5 levels
+            freeze: 1 + Math.floor(this.level / 10), // +1 every 10 levels
+            blast: 1 + Math.floor(this.level / 15)   // +1 every 15 levels
+        };
+    }
+    
     useHint() {
         if (this.powerups.hint <= 0) return;
         if (this.selectedCell === null) return;
@@ -1024,7 +1030,6 @@ class SudokuNova {
         
         this.powerups.hint--;
         this.updatePowerupDisplay();
-        this.savePowerups();
         
         // Fill in the correct number
         const idx = this.selectedCell;
@@ -1051,7 +1056,6 @@ class SudokuNova {
         
         this.powerups.freeze--;
         this.updatePowerupDisplay();
-        this.savePowerups();
         
         // Freeze timer for 30 seconds
         this.timerFrozen = true;
@@ -1073,7 +1077,6 @@ class SudokuNova {
         
         this.powerups.blast--;
         this.updatePowerupDisplay();
-        this.savePowerups();
         
         // Reveal all instances of a random missing number in the selected row/col/box
         const idx = this.selectedCell;
@@ -1122,12 +1125,6 @@ class SudokuNova {
         document.getElementById('powerup-hint').classList.toggle('disabled', this.powerups.hint <= 0);
         document.getElementById('powerup-freeze').classList.toggle('disabled', this.powerups.freeze <= 0);
         document.getElementById('powerup-blast').classList.toggle('disabled', this.powerups.blast <= 0);
-    }
-    
-    savePowerups() {
-        localStorage.setItem('sudokuNovaHints', this.powerups.hint);
-        localStorage.setItem('sudokuNovaFreeze', this.powerups.freeze);
-        localStorage.setItem('sudokuNovaBlast', this.powerups.blast);
     }
     
     // ============ Number Tracking ============
@@ -1246,6 +1243,9 @@ class SudokuNova {
         this.maxCombo = 1;
         this.selectedCell = null;
         this.notesMode = false;
+        
+        // Reset power-ups based on current level (fresh start each game!)
+        this.powerups = this.calculatePowerups();
         
         document.getElementById('btn-notes').classList.remove('active');
         
