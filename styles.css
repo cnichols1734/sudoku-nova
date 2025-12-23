@@ -35,9 +35,12 @@
     --cell-border-box: rgba(255, 255, 255, 0.3);
     --cell-error: rgba(255, 45, 117, 0.3);
     
-    /* Sizing */
-    --grid-size: min(92vw, 390px);
+    /* Sizing - responsive based on viewport */
+    --grid-size: min(88vw, 390px);
     --cell-size: calc(var(--grid-size) / 9);
+    
+    /* Dynamic spacing based on screen height */
+    --spacing-unit: min(1.2vh, 10px);
     
     /* Transitions */
     --transition-fast: 0.15s ease;
@@ -93,15 +96,16 @@ body {
     z-index: 1;
     width: 100%;
     max-width: 430px;
-    min-height: 100vh;
-    min-height: 100dvh;
-    min-height: -webkit-fill-available;
+    height: 100vh;
+    height: 100dvh;
+    height: -webkit-fill-available;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 12px 16px;
-    padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    justify-content: space-between;
+    padding: var(--spacing-unit) 16px;
+    padding-top: calc(env(safe-area-inset-top, 0px) + var(--spacing-unit));
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--spacing-unit));
     background: linear-gradient(
         180deg,
         rgba(157, 78, 221, 0.1) 0%,
@@ -117,7 +121,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    flex-shrink: 0;
 }
 
 .logo {
@@ -261,11 +265,11 @@ body {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    padding: 10px 16px;
+    padding: 8px 16px;
     background: var(--bg-surface);
     border-radius: 12px;
-    margin-bottom: 8px;
     border: 1px solid var(--cell-border);
+    flex-shrink: 0;
 }
 
 .stat-item {
@@ -353,10 +357,10 @@ body {
 /* XP Bar */
 .xp-bar-container {
     width: 100%;
-    margin-bottom: 10px;
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0;
 }
 
 .xp-bar {
@@ -388,8 +392,8 @@ body {
 /* Grid Container */
 .grid-container {
     position: relative;
-    margin-bottom: 12px;
     z-index: 1;
+    flex-shrink: 0;
 }
 
 .grid-glow {
@@ -551,15 +555,15 @@ body {
 .powerups {
     display: flex;
     gap: 12px;
-    margin-bottom: 12px;
+    flex-shrink: 0;
 }
 
 .powerup {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    padding: 10px 16px;
+    gap: 2px;
+    padding: clamp(6px, 1.2vh, 10px) 14px;
     background: var(--bg-surface);
     border: 1px solid var(--cell-border);
     border-radius: 12px;
@@ -583,15 +587,15 @@ body {
 }
 
 .powerup-icon {
-    font-size: 24px;
+    font-size: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .powerup-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
 }
 
 #powerup-hint .powerup-icon svg {
@@ -640,8 +644,7 @@ body {
     gap: 0;
     width: 100%;
     max-width: calc(var(--grid-size) + 20px);
-    margin-bottom: 10px;
-    padding: 4px 0;
+    flex-shrink: 0;
 }
 
 .num-btn {
@@ -652,13 +655,13 @@ body {
     border: none;
     border-radius: 12px;
     font-family: 'DM Sans', -apple-system, sans-serif;
-    font-size: 28px;
+    font-size: clamp(22px, 6vw, 28px);
     font-weight: 600;
     color: var(--text-primary);
     cursor: pointer;
     transition: all var(--transition-fast);
-    padding: 14px 0;
-    min-height: 56px;
+    padding: clamp(8px, 2vh, 14px) 0;
+    min-height: clamp(44px, 7vh, 56px);
 }
 
 .num-btn:active {
@@ -684,9 +687,10 @@ body {
 /* Action Buttons */
 .action-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
     max-width: var(--grid-size);
+    flex-shrink: 0;
 }
 
 .action-btn {
@@ -694,13 +698,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
-    padding: 10px 8px;
+    gap: 2px;
+    padding: clamp(6px, 1.2vh, 10px) 8px;
     background: var(--bg-surface);
     border: 1px solid var(--cell-border);
     border-radius: 12px;
     color: var(--text-secondary);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -1329,36 +1333,80 @@ body {
 }
 
 /* Responsive Adjustments */
-@media (max-height: 700px) {
+
+/* Smaller phones (iPhone 15, SE, etc.) */
+@media (max-height: 850px) {
     :root {
         --grid-size: min(85vw, 340px);
+        --spacing-unit: 6px;
     }
     
     .stats-bar {
-        padding: 8px 12px;
-        margin-bottom: 8px;
+        padding: 6px 12px;
     }
     
-    .xp-bar-container {
-        margin-bottom: 10px;
+    .stat-number {
+        font-size: 14px;
     }
     
-    .powerups {
-        margin-bottom: 10px;
+    .stat-label {
+        font-size: 9px;
+    }
+    
+    .xp-bar {
+        height: 4px;
+    }
+    
+    .xp-text {
+        font-size: 10px;
     }
     
     .powerup {
-        padding: 8px 12px;
+        padding: 5px 10px;
     }
     
-    .number-pad {
-        margin-bottom: 8px;
+    .powerup-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .powerup-name {
+        font-size: 9px;
+    }
+    
+    .cell {
+        font-size: calc(var(--cell-size) * 0.5);
+    }
+}
+
+/* Very small phones */
+@media (max-height: 700px) {
+    :root {
+        --grid-size: min(82vw, 300px);
+        --spacing-unit: 4px;
+    }
+    
+    .logo-text {
+        font-size: 16px;
+    }
+    
+    .powerup-name {
+        display: none;
+    }
+    
+    .action-btn {
+        font-size: 9px;
+    }
+    
+    .action-btn .action-icon svg {
+        width: 16px;
+        height: 16px;
     }
 }
 
 @media (max-width: 360px) {
     :root {
-        --grid-size: min(92vw, 320px);
+        --grid-size: min(90vw, 300px);
     }
     
     .logo-text {
