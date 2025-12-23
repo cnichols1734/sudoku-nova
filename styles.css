@@ -1329,156 +1329,34 @@ body {
 }
 
 /* Responsive Adjustments */
-
-/* Medium phones like iPhone 15, iPhone 14 (height ~850px) */
-@media (max-height: 900px) {
+@media (max-height: 700px) {
     :root {
-        --grid-size: min(88vw, 340px);
-    }
-    
-    #app {
-        padding: 10px 14px;
-        padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
-        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
-    }
-    
-    .game-header {
-        margin-bottom: 6px;
+        --grid-size: min(85vw, 340px);
     }
     
     .stats-bar {
-        padding: 8px 14px;
-        margin-bottom: 6px;
-    }
-    
-    .xp-bar-container {
-        margin-bottom: 8px;
-    }
-    
-    .grid-container {
-        margin-bottom: 10px;
-    }
-    
-    .powerups {
-        margin-bottom: 10px;
-        gap: 10px;
-    }
-    
-    .powerup {
-        padding: 8px 14px;
-    }
-    
-    .number-pad {
-        margin-bottom: 8px;
-        padding: 2px 0;
-    }
-    
-    .num-btn {
-        font-size: 24px;
-        min-height: 48px;
-        padding: 10px 0;
-    }
-    
-    .action-btn {
-        padding: 8px 6px;
-        gap: 2px;
-    }
-    
-    .action-btn .action-icon svg {
-        width: 18px;
-        height: 18px;
-    }
-}
-
-/* Smaller phones like iPhone SE, older iPhones (height ~750px or less) */
-@media (max-height: 750px) {
-    :root {
-        --grid-size: min(85vw, 300px);
-    }
-    
-    #app {
         padding: 8px 12px;
-        padding-top: calc(env(safe-area-inset-top, 0px) + 6px);
-        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
-    }
-    
-    .game-header {
-        margin-bottom: 4px;
-    }
-    
-    .logo-text {
-        font-size: 16px;
-    }
-    
-    .stats-bar {
-        padding: 6px 12px;
-        margin-bottom: 4px;
-    }
-    
-    .stat-number {
-        font-size: 14px;
+        margin-bottom: 8px;
     }
     
     .xp-bar-container {
-        margin-bottom: 6px;
-    }
-    
-    .xp-bar {
-        height: 4px;
-    }
-    
-    .xp-text {
-        font-size: 10px;
-        min-width: 70px;
-    }
-    
-    .grid-container {
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
     
     .powerups {
-        margin-bottom: 8px;
-        gap: 8px;
+        margin-bottom: 10px;
     }
     
     .powerup {
-        padding: 6px 10px;
-    }
-    
-    .powerup-icon svg {
-        width: 20px;
-        height: 20px;
-    }
-    
-    .powerup-name {
-        font-size: 9px;
+        padding: 8px 12px;
     }
     
     .number-pad {
-        margin-bottom: 6px;
-        padding: 0;
-    }
-    
-    .num-btn {
-        font-size: 22px;
-        min-height: 44px;
-        padding: 8px 0;
-    }
-    
-    .action-btn {
-        padding: 6px 4px;
-        gap: 2px;
-        font-size: 10px;
-    }
-    
-    .action-btn .action-icon svg {
-        width: 16px;
-        height: 16px;
+        margin-bottom: 8px;
     }
 }
 
-/* Narrow screens */
-@media (max-width: 380px) {
+@media (max-width: 360px) {
     :root {
         --grid-size: min(92vw, 320px);
     }
