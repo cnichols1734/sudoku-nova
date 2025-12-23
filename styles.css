@@ -28,9 +28,9 @@
     /* Grid Colors */
     --cell-bg: rgba(255, 255, 255, 0.03);
     --cell-bg-hover: rgba(255, 255, 255, 0.08);
-    --cell-bg-selected: rgba(76, 201, 240, 0.15);
-    --cell-bg-same-number: rgba(157, 78, 221, 0.15);
-    --cell-bg-same-region: rgba(255, 255, 255, 0.05);
+    --cell-bg-selected: rgba(76, 201, 240, 0.25);
+    --cell-bg-same-number: rgba(157, 78, 221, 0.25);
+    --cell-bg-same-region: rgba(76, 201, 240, 0.08);
     --cell-border: rgba(255, 255, 255, 0.1);
     --cell-border-box: rgba(255, 255, 255, 0.3);
     --cell-error: rgba(255, 45, 117, 0.3);
@@ -55,6 +55,8 @@
 html, body {
     height: 100%;
     overflow: hidden;
+    position: fixed;
+    width: 100%;
 }
 
 body {
@@ -63,8 +65,9 @@ body {
     color: var(--text-primary);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
+    min-height: 100dvh;
     min-height: -webkit-fill-available;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -91,13 +94,14 @@ body {
     width: 100%;
     max-width: 430px;
     min-height: 100vh;
+    min-height: 100dvh;
     min-height: -webkit-fill-available;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 16px;
-    padding-top: env(safe-area-inset-top, 16px);
-    padding-bottom: env(safe-area-inset-bottom, 16px);
+    padding: 12px 16px;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
     background: linear-gradient(
         180deg,
         rgba(157, 78, 221, 0.1) 0%,
@@ -113,7 +117,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .logo {
@@ -257,10 +261,10 @@ body {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 10px 16px;
     background: var(--bg-surface);
     border-radius: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     border: 1px solid var(--cell-border);
 }
 
@@ -311,7 +315,7 @@ body {
 /* Combo Timer Bar */
 .combo-timer-bar {
     position: absolute;
-    bottom: 4px;
+    bottom: -8px;
     left: 50%;
     transform: translateX(-50%);
     width: 40px;
@@ -349,7 +353,7 @@ body {
 /* XP Bar */
 .xp-bar-container {
     width: 100%;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -384,7 +388,7 @@ body {
 /* Grid Container */
 .grid-container {
     position: relative;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     z-index: 1;
 }
 
@@ -547,7 +551,7 @@ body {
 .powerups {
     display: flex;
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .powerup {
@@ -636,8 +640,8 @@ body {
     gap: 0;
     width: 100%;
     max-width: calc(var(--grid-size) + 20px);
-    margin-bottom: 16px;
-    padding: 8px 0;
+    margin-bottom: 10px;
+    padding: 4px 0;
 }
 
 .num-btn {
@@ -690,8 +694,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    padding: 12px 8px;
+    gap: 3px;
+    padding: 10px 8px;
     background: var(--bg-surface);
     border: 1px solid var(--cell-border);
     border-radius: 12px;
@@ -1352,14 +1356,15 @@ body {
     }
 }
 
-/* Smaller iPhones (iPhone 15, 14, etc. - NOT Pro Max) */
+/* Smaller iPhones (iPhone 15/14/13 non-Pro Max, width ~393px) */
+/* This does NOT apply to iPhone 15 Pro Max (430px width) */
 @media (max-width: 414px) {
     .game-header {
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
     
     .stats-bar {
-        padding: 6px 10px;
+        padding: 8px 12px;
         margin-bottom: 6px;
     }
     
@@ -1368,12 +1373,12 @@ body {
     }
     
     .powerups {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         gap: 8px;
     }
     
     .powerup {
-        padding: 8px 14px;
+        padding: 8px 12px;
         gap: 2px;
     }
     
@@ -1387,14 +1392,14 @@ body {
     }
     
     .number-pad {
-        margin-bottom: 10px;
-        padding: 4px 0;
+        margin-bottom: 8px;
+        padding: 2px 0;
     }
     
     .num-btn {
         font-size: 24px;
-        padding: 10px 0;
-        min-height: 48px;
+        padding: 8px 0;
+        min-height: 44px;
     }
     
     .action-buttons {
@@ -1409,8 +1414,8 @@ body {
     }
     
     .action-btn .action-icon svg {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
     }
 }
 
